@@ -37,7 +37,6 @@ public class Main {
         Autor autorOrwell = Manager.addAutor("George Orwell");
         Autor autorWoolf = Manager.addAutor("Virginia Woolf");
 
-        /*
         // Comprovem que s'han creat els autors
         @SuppressWarnings("unchecked")
         Collection<Autor> autors = (Collection<Autor>) Manager.listCollection(Autor.class);
@@ -165,7 +164,6 @@ public class Main {
         System.out.println("\nConsulta 3: Llibres i les seves biblioteques");
         List<Object[]> llibresBiblios = Manager.findLlibresAmbBiblioteques();
         System.out.println(Manager.formatMultipleResult(llibresBiblios));
-        */
 
         // 11. Tanquem la connexió
         System.out.println("\n=== Finalitzant el programa ===");

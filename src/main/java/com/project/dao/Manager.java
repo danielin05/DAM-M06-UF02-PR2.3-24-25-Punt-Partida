@@ -2,10 +2,7 @@ package com.project.dao;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -16,12 +13,104 @@ import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.query.Query;
 
 import com.project.domain.*;
 
 public class Manager {
     private static SessionFactory factory;
+
+
+    public static Autor addAutor(String autorName){
+        Autor newAutor = new Autor(autorName);
+
+        return newAutor;
+    }
+
+    public static Persona addPersona(String dni, String nom, String telefon, String email){
+        Persona newPersona = new Persona(dni, nom, telefon, email);
+
+        return newPersona;
+    }
+
+    public static Llibre addLlibre(String ibsn, String titol, String editorial, Integer anyPublicacio){
+        Llibre newLlibre = new Llibre(ibsn, titol, editorial, anyPublicacio);
+
+        return newLlibre;
+    }
+
+    public static Biblioteca addBiblioteca(String nom, String ciutat, String adreca, String telefon, String email){
+        Biblioteca newBiblioteca = new Biblioteca(nom, ciutat, adreca, telefon, email);
+
+        return newBiblioteca;
+    }
+
+    public static Exemplar addExemplar(String codiBarres, Llibre llibre, Biblioteca biblioteca){
+        Exemplar newExemplar = new Exemplar(codiBarres, llibre, biblioteca);
+
+        return newExemplar;
+    }
+
+    public static void updateAutor(long autorId, String autorNom, Set<Llibre> llibres){
+        try (Session session = factory.openSession()) {
+            Transaction tx = session.beginTransaction();
+            try {
+                Autor autor = session.get(Autor.class, autorId);
+                if (autor != null) {
+                    autor.setNom(autorNom);
+                    autor.setLlibres(llibres);
+                    session.merge(autor);
+                }
+                tx.commit();
+            } catch (HibernateException e) {
+                if (tx != null) tx.rollback();
+                throw e;
+            }
+        }
+    }
+
+    /**
+     * Llista entitats amb filtre opcional.
+     */
+    public static <T> Collection<?> listCollection(Class<? extends T> clazz, String where) {
+        Collection<?> result = null;
+        try (Session session = factory.openSession()) {
+            Transaction tx = session.beginTransaction();
+            try {
+                String hql = where.isEmpty() 
+                    ? "FROM " + clazz.getName()
+                    : "FROM " + clazz.getName() + " WHERE " + where;
+                result = session.createQuery(hql, clazz).list();
+                tx.commit();
+            } catch (HibernateException e) {
+                if (tx != null) tx.rollback();
+                throw e;
+            }
+        }
+        return result;
+    }
+
+    public static <T> Collection<?> listCollection(Class<? extends T> clazz) {
+        return listCollection(clazz, "");
+    }
+
+    /**
+     * Converteix una col·lecció d'entitats a String.
+     */
+    public static <T> String collectionToString(Class<? extends T> clazz, Collection<?> collection) {
+        if (collection == null || collection.isEmpty()) {
+            return "";
+        }
+        
+        StringBuilder txt = new StringBuilder();
+        for (Object obj : collection) {
+            T cObj = clazz.cast(obj);
+            txt.append("\n").append(cObj.toString());
+        }
+        if (txt.length() > 0) {
+            txt.delete(0, 1);  // Eliminem el primer salt de línia
+        }
+        return txt.toString();
+    }
 
     /**
      * Crea la SessionFactory per defecte
