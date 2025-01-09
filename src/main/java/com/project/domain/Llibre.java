@@ -9,12 +9,35 @@ import java.util.Set;
 @Table(name = "llibres")
 public class Llibre implements Serializable {
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "llibre_id")
     private long llibreId;
+    
+    @Column(nullable = false, length = 50)
     private String isbn;
+    
+    @Column(nullable = false, length = 50)
     private String titol;
+    
+    @Column(nullable = false, length = 50)
     private String editorial;
+    
+    @Column(nullable = false, length = 50)
     private Integer anyPublicacio;
+
+    @ManyToMany(
+        cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+        fetch = FetchType.EAGER
+    )
+    @JoinTable(
+        name = "llibre_autor",
+        joinColumns = @JoinColumn(name = "llibre_id"),
+        inverseJoinColumns = @JoinColumn(name = "autor_id")
+    )
     private Set<Autor> autors = new HashSet<>();
+
+    @OneToMany(mappedBy = "llibre", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Exemplar> exemplars = new HashSet<>();
     
     public long getLlibreId() {
@@ -58,6 +81,10 @@ public class Llibre implements Serializable {
     }
     public void setExemplars(Set<Exemplar> exemplars) {
         this.exemplars = exemplars;
+    }
+
+    public Llibre(){
+        
     }
 
     public Llibre(String isbn, String titol, String editorial, Integer anyPublicacio) {

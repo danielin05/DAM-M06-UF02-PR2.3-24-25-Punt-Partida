@@ -9,14 +9,33 @@ import java.util.Set;
 @Table(name = "biblioteques")
 public class Biblioteca implements Serializable {
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "biblioteca_id")
     private long bibliotecaId;
+
+    @Column(nullable = false, length = 50)
     private String nom;
+
+    @Column(nullable = false, length = 50)
     private String ciutat;
+
+    @Column(nullable = false, length = 50)
     private String adreca;
+
+    @Column(nullable = false, length = 50)
     private String telefon;
+
+    @Column(nullable = false, length = 50)
     private String email;
+
+    @Column(length = 50)
     private Set<Exemplar> exemplars = new HashSet<>();    
     
+    public Biblioteca(){
+        
+    }
+
     public Biblioteca(String nom, String ciutat, String adreca, String telefon, String email) {
         this.nom = nom;
         this.ciutat = ciutat;

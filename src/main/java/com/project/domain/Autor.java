@@ -9,10 +9,29 @@ import java.util.Set;
 @Table(name = "autors")
 public class Autor implements Serializable {
   
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "autor_id")
     private long autorId;
+    
+    @Column(nullable = false, length = 50)
     private String nom;
+    
+    @ManyToMany(
+        cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+        fetch = FetchType.EAGER
+    )
+    @JoinTable(
+        name = "autor_llibre",
+        joinColumns = @JoinColumn(name = "autor_id"),
+        inverseJoinColumns = @JoinColumn(name = "llibre_id")
+    )
     private Set<Llibre> llibres = new HashSet<>();
     
+    public Autor(){
+
+    }
+
     public Autor(String nom) {
         this.nom = nom;
     }

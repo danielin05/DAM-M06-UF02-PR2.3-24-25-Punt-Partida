@@ -9,13 +9,32 @@ import java.util.Set;
 @Table(name = "exemplars")
 public class Exemplar implements Serializable {
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "exemplar_id")
     private long exemplarId;
-    private String codiBarres;
-    private Llibre llibre;
-    private Biblioteca biblioteca;
-    private boolean disponible;
-    private Set<Prestec> historialPrestecs = new HashSet<>();
     
+    @Column(nullable = false, length = 50)
+    private String codiBarres;
+    
+    @ManyToOne
+    @JoinColumn(name = "llibre_id")
+    private Llibre llibre;
+    
+    @ManyToOne
+    @JoinColumn(name = "biblioteca_id")
+    private Biblioteca biblioteca;
+    
+    @Column(length = 50)
+    private boolean disponible;
+
+    @OneToMany(mappedBy = "exemplar", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Prestec> historialPrestecs = new HashSet<>();
+
+    public Exemplar(){
+        
+    }
+
     public Exemplar(String codiBarres, Llibre llibre, Biblioteca biblioteca) {
         this.codiBarres = codiBarres;
         this.llibre = llibre;
